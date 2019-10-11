@@ -3,11 +3,10 @@
 <pre><code>demo Monday 4 Nov
 name cw1
 three command line arguments
-	- [] int 1st: 0 = encryption, 1 = decryption 
-	- [] string 2nd: first private key
-	- [] string 3nd: second private key
+	- int 1st: 0 = encryption, 1 = decryption 
+	- string 2nd: first private key
+	- string 3nd: second private key
 	./cw1 0 keystring1 keystring2
-</code></pre>
 	
 passed to the program using standard input
 1. preprocessing
@@ -19,3 +18,4 @@ passed to the program using standard input
 
 
 3. decryption
+</code></pre>
