@@ -9,7 +9,7 @@ three command line arguments
 	- string 3nd: second private key
 	./cw1 0 keystring1 keystring2
 
-	
+# mod is the operation of finding the remainder when dividing 2 numbers
 passed to the program using standard input
 1. preprocessing
 	1.1 ensure 2 keys' length are co-prime(GCD of keystring1 keystring2 = 1)
