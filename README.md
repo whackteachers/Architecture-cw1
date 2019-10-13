@@ -27,7 +27,7 @@ passed to the program using standard input
 
 3. decryption
 	(x + key1 + key2 + 22) mod 26
-	= (x + n + (26 - 4)) mod 26
+	= (x + key1 + key2 + (26 - 4)) mod 26
 	= (x + key1 + key2 - 4) mod 26
 	= (x + n - 4) mod 26
 	= (x + t) mod 26
