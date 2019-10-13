@@ -31,5 +31,47 @@ passed to the program using standard input
 	= (x + key1 + key2 - 4) mod 26
 	= (x + n - 4) mod 26
 	= (x + t) mod 26
+	
+strlen function eg.
+.section .rodata       
+.align 2                
+
+ message:                        
+    .string "Hello, world!" 
+
+ print:
+    .string "Length is : %d\n"
+
+.text                   
+.align 2
+.global main            
+
+strlen: 
+    stmfd   sp!, {lr}
+    ldrb    r2, [r0]
+    cmp     r2, #0
+    beq     out
+    add     r1, r1, #1
+    add     r0, r0, #1
+    bl      strlen
+    ldmfd   sp!, {lr}
+    bx      lr
+    .global main
+
+main:                           
+    stmfd   sp!, {lr}       
+    ldr     r0, =message    
+    mov     r1, #0
+    bl      strlen
+    ldmfd   sp!, {lr}
+    bx      lr
+out:
+
+    stmfd   sp!, {lr}
+    ldr     r0, =print
+    mov     r3,  r1  
+    bl      printf
+    ldmfd   sp!, {lr}
+    bx      lr
 
 </code></pre>
