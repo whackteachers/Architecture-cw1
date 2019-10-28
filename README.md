@@ -85,4 +85,7 @@ mod:
         mul     w1, w2, w1
         sub     w0, w0, w1
         add     sp, sp, 16
+	
+https://gist.github.com/evandorn/7244121
+https://www.rosettacode.org/wiki/Caesar_cipher#ARM_Assembly
 </code></pre>
