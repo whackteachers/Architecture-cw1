@@ -1,134 +1,109 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
-int  len(char str[]);
-char* encrypt(char key1[], char key2[]);
-char* decrypt(char key1[], char key2[]);
-char* shiftd(char key[]);
-char* shifte(char key[]);
+//int len(char str[]);
+int gcd(int a, int b);
+int mod(int x, int y);
 char* cw1(int flag, char key1[], char key2[]);
 
-char text[] = "crrjqtd";			//plain text
+char text[] = "message";			//plain text Touanwu
 
 void main() {
 	char key1[] = "lock";			//private key 1
 	char key2[] = "key";			//private key 2
-	cw1(1, key1, key2);
-	
+
+	printf("%s\n", cw1(0, key1, key2));
 }
 
-int len(char str[]) {
-	return sizeof(str) / sizeof(char);
-}
-
-char* encrypt(char key1[], char key2[]) {
-	int text_size = sizeof(text) / sizeof(char);		//get the length of text, key1, key 2
-	int key1_size = sizeof(key1) / sizeof(char);
-	int key2_size = len(key2);
-	char* cipher;
-
-	//encrypt all characters 1 by 1 with for loop with respect to the text length
-	for (int i = 0; i < text_size - 1; i++) {
-		// # all char can be treated as int/numbers, direct arithematic will be performed directly
-		char* hcipher;
-		char letter = text[i];		//get the letter at position i
-		int j = i % key1_size;
-		char key1_letter = key1[j];
-		//encrypt text-key1+2 mod 26
-
-		char cletter = letter - key1_letter;
-		cletter = cletter + 2;
-		//cletter = cletter % 26;
-		//carry out mod operation (ensure result ranged from 1 to 26)
-		while (cletter < 1 || cletter > 26) {
-			if (cletter < 1) {
-				cletter = cletter + 26;
-			}
-			else if (cletter > 26) {
-				cletter = cletter - 26;
-			}
-		}
-
-		printf("cipher letter: %c (%i)\n", cletter + 96, cletter);
-		j++;
-		//printf("%i\n", letter+1);
-	}
-	return 0;
-}
-
-char* decrypt(char key1[], char key2[]) {
-	int text_size = sizeof(text) / sizeof(char);		//get the length of text, key1, key 2
-	int key1_size = sizeof(key1) / sizeof(char);
-	int key2_size = len(key2);
-	char* htext = shiftd(key1);
-	char* text  = shiftd(key2);
-	/*
-	//encrypt all characters 1 by 1 with for loop with respect to the text length
-	for (int i = 0; i < text_size - 1; i++) {
-		// # all char can be treated as int/numbers, direct arithematic will be performed directly
-		
-		char cletter = text[i]-96, letter;		//get the letter at position i
-		int j = i % key1_size;
-		char key1_letter = key1[j]-96;
-		//encrypt text+key1-2 mod 26
-		letter = cletter + key1_letter;
-		letter = letter - 2;
-		//cletter = cletter % 26;
-		//carry out mod operation (ensure result ranged from 1 to 26)
-		while (letter < 1 || letter > 26) {
-			if (letter < 1) {
-				letter = letter + 26;
-			}
-			else if (letter > 26) {
-				letter = letter - 26;
-			}
-		}
-		printf("%i  %i\n", cletter, key1_letter);
-
-		
-		printf("cipher letter: %c (%i)\n", letter + 96, letter);
-		j++;
-	}*/
-
-	return text;
-}
-
-char* shiftd(char key[]) {
-	int text_size = sizeof(text) / sizeof(char);		//get the length of text, key1
-	int key_size = sizeof(key) / sizeof(char);
-	//char* result[8];
-	//encrypt all characters 1 by 1 with for loop with respect to the text length
-	for (int i = 0; i < text_size - 1; i++) {
-		// # all char can be treated as int/numbers, direct arithematic will be performed directly
-
-		char cletter = text[i] - 96, letter;		//get the letter at position i
-		int j = i % key_size;
-		char key_letter = key[j] - 96;
-		//encrypt text+key1-2 mod 26
-		letter = cletter + key_letter;
-		letter = letter - 2;
-		//cletter = cletter % 26;
-		//carry out mod operation (ensure result ranged from 1 to 26)
-		while (letter < 1 || letter > 26) {
-			if (letter < 1) {
-				letter = letter + 26;
-			}
-			else if (letter > 26) {
-				letter = letter - 26;
-			}
-		}
-		text[i] = letter;
-		j++;
-	}
-	return text;
-}
+//int len(char str[]) {
+//	return sizeof(str) / sizeof(char);
+//}
 
 char* cw1(int flag, char key1[], char key2[]) {
-	if (flag) {
-		printf("%s",decrypt(key1, key2));
+	//Removes non alphabets from string
+	int i = 0;
+	int j = i, k = i;
+	//for (int i = 0; text[i] != '\0'; ++i)
+	//{
+	//	while (!((text[i] >= 'a' && text[i] <= 'z') || (text[i] >= 'A' && text[i] <= 'Z') || text[i] == '\0'))
+	//	{
+	//		for (j = i; text[j] != '\0'; ++j)
+	//		{
+	//			text[j] = text[j + 1];
+	//		}
+	//		text[j] = '\0';
+	//	}
+	//}
+	////To lowercase.
+	//while (text[k] != '\0')
+	//{
+	//	if (text[k] >= 'A' && text[k] <= 'Z') {
+	//		text[k] = text[k] + 32;
+	//	}
+	//	k++;
+	//}
+
+	//get the length of text, key1, key 2
+	int text_size = strlen(text);
+	int key1_size = strlen(key1);
+	int key2_size = strlen(key2);
+
+	//printf("%d %d %d", text_size, key1_size, key2_size);
+	if (gcd(key1_size, key2_size) != 1) {
+		return "Key lengths are not co-prime.";
 	}
-	else {
-		encrypt(key1, key2);
+	char* str = (char*)calloc(text_size+1, sizeof(char));
+
+	for (int i = 0; i < text_size ; i++) {
+		// # all char can be treated as int/numbers, direct arithematic will be performed directly
+		char str_letter;
+		char letter = text[i] - 96;		//get the letter at position i
+		if (key1[j] == 0)
+			j = 0;
+		if (key2[k] == 0)
+			k = 0;
+		//int j = mod(i, key1_size);
+		//int k = mod(i, key2_size);
+		char key1_letter = key1[j] - 96;
+		char key2_letter = key2[k] - 96;
+		int n = key1_letter + key2_letter;
+		n = n - 4;
+		
+		if (flag) {
+			str_letter = letter + n;
+		}
+		else {
+			str_letter = letter - n;
+		}
+		//str_letter = str_letter % 26;
+		//carry out mod operation (ensure result ranged from 1 to 26)
+		while (str_letter < 1 || str_letter > 26) {
+			if (str_letter < 1) {
+				str_letter = str_letter + 26;
+			}
+			else if (str_letter > 26) {
+				str_letter = str_letter - 26;
+			}
+		}
+		str[i] = str_letter + 96;
+		printf("cipher letter: %c (%i)\n", str_letter + 96, str_letter);
+		j++;
+		k++;
 	}
-	return 0;
+	
+	return str;
+}
+
+int gcd(int a, int b){
+
+	while (a != b){
+		if (a > b){
+			a = a - b;
+		}
+		else{
+			b = b - a;
+		}
+	}
+	return a;
 }
