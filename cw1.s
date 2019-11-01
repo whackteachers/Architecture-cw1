@@ -161,7 +161,7 @@ check_lower:
 	CMP r0, #122  		@is the char > z?
 	BGT isEOF  		@continue if so(go to next char)
 	
-@ Started after input in ensured to be an alphabet
+@ Started after input is ensured to be an alphabet
 cipher_loop:
         SUB r0, r0, #96         @r0 = r0 - 96 translate to logical letter value
 
