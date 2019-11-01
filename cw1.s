@@ -1,6 +1,6 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @file name: 	cw1
-@description: 	ARMv7 assembly program that encrypt or decrypt text from STDIN
+@description: 	ARMv7 assembly program that encrypts or decrypts text from STDIN
 @		using simple add and subtract with 2 given private keys
 @authors:	Hoi Ming Pong, Nigel Ng
 @version:	1.0
@@ -27,7 +27,6 @@ error: .asciz "Key lengths are not co-prime."
 @	    printf("Key lengths are not co-prime.\n");
 @	    exit(0);
 @	}
-@
 @	cipher(flag, key1, key2);
 @
 @	printf("\n");
@@ -68,23 +67,25 @@ main:
 	BL  cipher		@start ciphering the text
 	B   exit
 
-@ called to print error message only when the private keys length are not coprime
+@ called to print error message if keys lengths are not coprime
 keys_not_coprime:
         LDR r0, =error          @load the error message string
         BL printf               @print it to console
+	
 @ mark the end of all processes
 exit:
         LDR r0, =new_line       @make a newline when function ends
         BL printf
         POP {r4-r11, lr}        @restore all the registers
-        BX lr   @ end of program
+        BX lr   		@ end of program
 
 
-@ cipher function for both encrypt and decrypt
-@ cipher algorithm: (x-n)mod26 for encryption
+@ Cipher function for both encrypt and decrypt
+@ Cipher algorithm: (x-n)mod26 for encryption
 @		    (x+n)mod26 for decryption
-@ where x = the letter of the text
+@ Where x = the letter of the text
 @	n = letter of key1 + letter of key2 - 4
+@@@@@@@@@@@@@@@@ C CODE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @void cipher(int flag, char* key1, char* key2){
 @    for(char str_letter = getchar(); str_letter != -1; ){
 @        if (str_letter == -1)
@@ -94,7 +95,6 @@ exit:
 @	    str_letter = str_letter + 32;
 @        }
 @        if(str_letter >= 'a' && str_letter <= 'z') {
-@
 @
 @        str_letter = str_letter - 96;
 @        if (key1[j] == 0)
@@ -124,18 +124,20 @@ exit:
 @        k++;
 @    }
 @}
- @@@ r0: flag	(argument 1)
- @@@ r1: key1   (argument 2)
- @@@ r2: key2   (argument 3)
- @@@ r3: -
- @@@ r4: j (key1 counter)
- @@@ r5: k (key2 counter)
- @@@ r6: the char of key1
- @@@ r7: the char of key2
- @@@ r8: key1
- @@@ r9: key2
- @@@ r10: key1_size
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@ r0: flag	(argument 1)
+@@@ r1: key1   (argument 2)
+@@@ r2: key2   (argument 3)
+@@@ r3: -
+@@@ r4: j (key1 counter)
+@@@ r5: k (key2 counter)
+@@@ r6: the char of key1
+@@@ r7: the char of key2
+@@@ r8: key1
+@@@ r9: key2
+@@@ r10: key1_size
 
+@Start of cipher code
 cipher:
 	PUSH {r4-r10, lr}
 	MOV r10, r0		@save the flag to r10
@@ -143,49 +145,50 @@ cipher:
 	MOV r9, r2		@save key2 to r9
 	MOV r4, #0              @j = 0
         MOV r5, #0              @k = 0
-	B isEOF			@go into the loop check
+	B isEOF			@Go to End of File check
 
+@ Check if input is alphabet and if uppercase, change to lower
 read_text:
 	CMP r0, #65  		@is the char < A?
 	BLT isEOF     		@continue if so(go to next char)
 	CMP r0, #90  		@is the char > Z?
 	ADDLT r0, r0 ,#32  	@change upper to lower case if < Z (and > A)
 	BGT check_lower  	@check lower case letter if
-	B continue  		@else go to output the char
+	B cipher_loop  		@else go to output the char
 check_lower:
 	CMP r0, #97  		@is the char < a?
 	BLT isEOF     		@continue if so(go to next char)
 	CMP r0, #122  		@is the char > z?
 	BGT isEOF  		@continue if so(go to next char)
-continue:
-	@@@ start ciphering after validation @@@
-
+	
+@ Started after input in ensured to be an alphabet
+cipher_loop:
         SUB r0, r0, #96         @r0 = r0 - 96 translate to logical letter value
 
-	LDRB r6, [r8, r4]	@r2 = key1[j]	get char from text depending on j
- 	CMP r6, #0		@if(r4 == key1_size)
+	LDRB r6, [r8, r4]	@r2 = key1[j] get char from text depending on j
+ 	CMP r6, #0		@if(r4 == null/end of key)
 	MOVEQ r4, #0		@r4 = 0 reset j back to start
 	LDREQB r6, [r8]		@r6 = key1[0] load char again
 
   	SUB r6, r6, #96		@r6 = r6 - 96 translate to logical letter value
 
 	LDRB r7, [r9, r5]	@r7 = s2[k]  get char from text depending on k
-	CMP r7, #0              @if(r5 == key2_size)
+	CMP r7, #0              @if(r5 == null/end of key)
         MOVEQ r5, #0            @r5 = 0 reset k back to start
         LDREQB r7, [r9]         @r7 = s2[0] load char again
 
 	SUB r7, r7, #96		@r7 = r7 - 96 translate to logical letter value
 
-	@@@ cipher algorithm starts here @@@
+	@@@ Cipher algorithm starts here @@@
 	ADD r6, r6, r7		@r6 = s1[j] + s2[k] (n = key1_letter + key2_letter)
 	SUB r6, r6, #4		@r6 = r6 - 4        (n = n-4)
 
-	@@@ here will branch base on the flag to carry out encryption or decryption
+	@@@ Encrypt or decrepyt based on flag
 	CMP r10, #1        	@if(flag)
 	ADDEQ r0, r0, r6	@r0 = r0 + r6 (str_letter + n) (decryption)add value from the above from the original text
 	SUBNE r0, r0, r6	@r0 = r0 - r6 (str_letter - n)(encryption)minus value from the above from the original text
 
-@loop to ensure the final result value bound between 1 to 26
+@ Loop to ensure the final result value bound between 1 to 26
 bound1to26:
 	@ keep adding 26 until larger than 1
 	CMP r0, #1
@@ -202,21 +205,22 @@ bound1to26:
 	ADD r0, r0, #96		@r0 <- r0 + 96 translate the result letter value back to ascii value
 
 	BL putchar  		@print letter
- @@@Incrementing the key counters
-  	ADD r4, r4, #1  @j++
- 	ADD r5, r5, #1  @k++
+	
+@ Incrementing the key counters
+  	ADD r4, r4, #1  	@j++
+ 	ADD r5, r5, #1  	@k++
 
+@ Check for end of file
 isEOF:
 	BL getchar              @getchar from STDIN
 	CMP r0, #-1             @check if it's EOF
 	BNE read_text           @if not go to next char
 
-@return back to main after reaching null
+@ Restoring registers before returning to main if EOF is reached
 	POP {r4-r10, lr}
 	BX lr
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
 @ A function that takes a string and loop through all characters to count length
 @ and return its stringlength
 @ int stringlength(char* text){
@@ -232,21 +236,19 @@ stringlength:
 
 	MOV r3, #0  	    	@count = 0;
 	B check		    	@start by checking the loaded character
-loop:
+stringlength_loop:
     	ADD r3, r3, #1 	    	@r1 <- r1 + 1 (add count)
 	check:
     	LDRB r1, [r0], #1	@get the current char and increase loop index
     	CMP r1, #0	    	@check if it's on null character
-    	BNE loop	    	@start the loop
+    	BNE stringlength_loop	@start the loop
 
-@ break loop when null character is reached
-@ and put the count to r0 for return
-	MOV r0, r3
-
-	POP {lr}
-	BX lr @ return string length (in r0) to main
+@ Break loop when null character is reached
+	MOV r0, r3		@ r0 <- r3
+	POP {lr}		@ restore register
+	BX lr 			@ return string length (in r0) to main
+	
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
 @ function takes in 2 integers and get the greatest common divisor(GCD) of them through repeating cross subtraction
 @int gcd(int x, int y)
 @	while (a != b) {
@@ -259,8 +261,8 @@ loop:
 @	}
 @	return a;
 @}
-@ r0: a
-@ r1: b
+@@@ r0: a
+@@@ r1: b
 gcd:
         PUSH {lr}
 gcd_loop:
