@@ -9,8 +9,8 @@
 .data
 .balign 4
 new_line:  .asciz "\n"
-testlen: .asciz "%d %d"
 error: .asciz "Key lengths are not co-prime."
+
 .text
 .global main
 .balign 4
