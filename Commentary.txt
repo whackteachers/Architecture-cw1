@@ -1,0 +1,7 @@
+For the code in C, work was distributed fairly evenly with both of us working individually and consolidating a final version on GitHub.
+However certain functions were taken individually such as Hoi Pong(Jason) taking the main role on the cipher and keys and Nigel taking
+the co-prime check and alphabet filter. One thing worked on together would be coming up with the algorithem to come up with a variable
+in a simplified form to add/subtract to the cipher key. When implementing in ARM, Jason took over the lead as the 'driver' for the majority 
+of the work and Nigel mainly the 'navigator'. Roles occasionally swapped if meeting in person in labs. However most meetings occured online 
+so it was logistically sound to have one person driving. ARM was commented on frequently during coding so no massive cleanup or commenting was 
+necessary at the end. Overall the experience was positive and we worked well together.
