@@ -20,8 +20,8 @@ error: .asciz "Key lengths are not co-prime."
 @	char* key1 = argv[2];
 @	char* key2 = argv[3];
 @
-@	key1_size = stringlegth(key1);
-@	key2_size = stringlegth(key2);
+@	key1_size = stringlength(key1);
+@	key2_size = stringlength(key2);
 @
 @	if (gcd(key1_size, key2_size) != 1) {
 @	    printf("Key lengths are not co-prime.\n");
@@ -55,7 +55,7 @@ main:
 
   	MOV r0, r10		@load the keys' length to gcd function
 	MOV r1, r11
-  	BL  gcd			@ get gcd
+  	BL  gcd			@get gcd
   	CMP r0, #1
   	BNE keys_not_coprime	@ go to print error message if key lengths aren't coprime
 
@@ -179,15 +179,14 @@ cipher_loop:
 
 	SUB r7, r7, #96		@r7 = r7 - 96 translate to logical letter value
 
-	@@@ Cipher algorithm starts here @@@
+	@@@ Cipher algorithm starts here (getting value of n) @@@
 	ADD r6, r6, r7		@r6 = s1[j] + s2[k] (n = key1_letter + key2_letter)
 	SUB r6, r6, #4		@r6 = r6 - 4        (n = n-4)
 
-	@@@ Encrypt or decrepyt based on flag
+	@@@ Encrypt or decrepyt based on flag (letter +/- n) @@@
 	CMP r10, #1        	@if(flag)
-	ADDEQ r0, r0, r6	@r0 = r0 + r6 (str_letter + n) (decryption)add value from the above from the original text
-	SUBNE r0, r0, r6	@r0 = r0 - r6 (str_letter - n)(encryption)minus value from the above from the original text
-
+	ADDEQ r0, r0, r6	@r0 = r0 + r6 (str_letter + n)(decryption)
+	SUBNE r0, r0, r6	@r0 = r0 - r6 (str_letter - n)(encryption)
 @ Loop to ensure the final result value bound between 1 to 26
 bound1to26:
 	@ keep adding 26 until larger than 1
@@ -235,18 +234,18 @@ stringlength:
 	PUSH {lr}
 
 	MOV r3, #0  	    	@count = 0;
-	B check		    	@start by checking the loaded character
+	B stringlength_check	@start by checking the loaded character
 stringlength_loop:
     	ADD r3, r3, #1 	    	@r1 <- r1 + 1 (add count)
-	check:
+	stringlength_check:
     	LDRB r1, [r0], #1	@get the current char and increase loop index
     	CMP r1, #0	    	@check if it's on null character
     	BNE stringlength_loop	@start the loop
 
 @ Break loop when null character is reached
-	MOV r0, r3		@ r0 <- r3
-	POP {lr}		@ restore register
-	BX lr 			@ return string length (in r0) to main
+	MOV r0, r3		@r0 <- r3
+	POP {lr}		@restore register
+	BX lr 			@return string length (in r0) to main
 	
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ function takes in 2 integers and get the greatest common divisor(GCD) of them through repeating cross subtraction
@@ -271,4 +270,4 @@ gcd_loop:
         SUBLE    r1, r1, r0	@else r1 = r1 - r0
         BNE      gcd_loop	@loop if r0 != r1
         POP {lr}
-        BX lr @ return the gcd to main
+        BX lr 			@return the gcd to main
