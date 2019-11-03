@@ -88,13 +88,10 @@ exit:
 @@@@@@@@@@@@@@@@ C CODE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @void cipher(int flag, char* key1, char* key2){
 @    for(char str_letter = getchar(); str_letter != -1; ){
-@        if (str_letter == -1)
-@	    break;
-@
-@        if (str_letter < 'A' &&  str_letter > 'Z') {
+@	 if !((str_letter >= 'A' &&  str_letter <= 'Z') || (str_letter >= 'a' && str_letter <= 'z'))
+@	    continue
+@        else if (str_letter >= 'A' &&  str_letter <= 'Z')
 @	    str_letter = str_letter + 32;
-@        }
-@        if(str_letter >= 'a' && str_letter <= 'z') {
 @
 @        str_letter = str_letter - 96;
 @        if (key1[j] == 0)
